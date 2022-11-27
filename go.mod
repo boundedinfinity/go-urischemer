@@ -1,4 +1,4 @@
-module github.com/boundedinfinity/urischemer
+module github.com/boundedinfinity/go-urischemer
 
 go 1.18
 
