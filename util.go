@@ -1,8 +1,10 @@
 package urischemer
 
 import (
+	"fmt"
 	"net/url"
 	"path"
+	"strings"
 
 	"github.com/boundedinfinity/go-commoner/slicer"
 )
@@ -50,19 +52,25 @@ func Break(uri string) (UriScheme, string, error) {
 	var scheme UriScheme
 	var path string
 
-	parsed, err := url.Parse(uri)
+	switch {
+	case strings.HasPrefix(uri, File.String()):
+		scheme = File
+		path = strings.ReplaceAll(uri, fmt.Sprintf("%v://", File), "")
+	default:
+		parsed, err := url.Parse(uri)
 
-	if err != nil {
-		return scheme, path, err
+		if err != nil {
+			return scheme, path, err
+		}
+
+		scheme, err = Parse(parsed.Scheme)
+
+		if err != nil {
+			return scheme, path, err
+		}
+
+		path = parsed.Path
 	}
-
-	scheme, err = Parse(parsed.Scheme)
-
-	if err != nil {
-		return scheme, path, err
-	}
-
-	path = parsed.Path
 
 	return scheme, path, nil
 }
